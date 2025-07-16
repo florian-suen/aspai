@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace aspnetcoreapp.Migrations
+namespace Aspnetcoreapp.Migrations
 {
     /// <inheritdoc />
     public partial class newDateUpdate : Migration

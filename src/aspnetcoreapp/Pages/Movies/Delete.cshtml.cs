@@ -1,23 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+ 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using aspnetcoreapp.Data;
+ 
+using Aspnetcoreapp.Models;
+ 
 
-namespace aspnetcoreapp.Pages.Movies
+namespace Aspnetcoreapp.Pages.Movies
 {
-    public class DeleteModel : PageModel
+    public class DeleteModel(Aspnetcoreapp.Data.AspnetcoreappContext context) : PageModel
     {
-        private readonly aspnetcoreapp.Data.AspnetcoreappContext _context;
-
-        public DeleteModel(aspnetcoreapp.Data.AspnetcoreappContext context)
-        {
-            _context = context;
-        }
-
         [BindProperty]
         public Movie Movie { get; set; } = default!;
 
@@ -28,7 +21,7 @@ namespace aspnetcoreapp.Pages.Movies
                 return NotFound();
             }
 
-            var movie = await _context.Movie.FirstOrDefaultAsync(m => m.Id == id);
+            var movie = await context.Movie.FirstOrDefaultAsync(m => m.Id == id);
 
             if (movie is not null)
             {
@@ -47,12 +40,12 @@ namespace aspnetcoreapp.Pages.Movies
                 return NotFound();
             }
 
-            var movie = await _context.Movie.FindAsync(id);
+            var movie = await context.Movie.FindAsync(id);
             if (movie != null)
             {
                 Movie = movie;
-                _context.Movie.Remove(Movie);
-                await _context.SaveChangesAsync();
+                context.Movie.Remove(Movie);
+                await context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");

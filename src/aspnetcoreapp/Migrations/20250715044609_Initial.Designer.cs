@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using aspnetcoreapp.Data;
+using Aspnetcoreapp.Data;
 
 #nullable disable
 
-namespace aspnetcoreapp.Migrations
+namespace Aspnetcoreapp.Migrations
 {
     [DbContext(typeof(AspnetcoreappContext))]
     [Migration("20250715044609_Initial")]

@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Aspnetcoreapp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using aspnetcoreapp.Data;
 
-namespace aspnetcoreapp.Pages.Movies
+namespace Aspnetcoreapp.Pages.Movies
 {
-    public class CreateModel(aspnetcoreapp.Data.AspnetcoreappContext context) : PageModel
+    public class CreateModel(Aspnetcoreapp.Data.AspnetcoreappContext context) : PageModel
     {
         public IActionResult OnGet()
         {

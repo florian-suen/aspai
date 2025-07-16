@@ -1,26 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
+ 
 using Microsoft.EntityFrameworkCore;
-using aspnetcoreapp.Data;
+ 
+using Aspnetcoreapp.Models;
 
-namespace aspnetcoreapp.Pages.Movies
+namespace Aspnetcoreapp.Pages.Movies
 {
-    public class EditModel : PageModel
+    public class EditModel(Aspnetcoreapp.Data.AspnetcoreappContext context) : PageModel
     {
-        private readonly aspnetcoreapp.Data.AspnetcoreappContext _context;
-
-        public EditModel(aspnetcoreapp.Data.AspnetcoreappContext context)
-        {
-            _context = context;
-        }
-
         [BindProperty]
-        public Movie Movie { get; set; } = default!;
+        public Movie Movie { get; set; } = null!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,7 +19,7 @@ namespace aspnetcoreapp.Pages.Movies
                 return NotFound();
             }
 
-            var movie =  await _context.Movie.FirstOrDefaultAsync(m => m.Id == id);
+            var movie =  await context.Movie.FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
                 return NotFound();
@@ -47,11 +37,11 @@ namespace aspnetcoreapp.Pages.Movies
                 return Page();
             }
 
-            _context.Attach(Movie).State = EntityState.Modified;
+            context.Attach(Movie).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -70,7 +60,7 @@ namespace aspnetcoreapp.Pages.Movies
 
         private bool MovieExists(int id)
         {
-            return _context.Movie.Any(e => e.Id == id);
+            return context.Movie.Any(e => e.Id == id);
         }
     }
 }
