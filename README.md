@@ -1,3 +1,7 @@
 # API + WEB App
 
-Trying to implment an AI Bot using ASP.Net.  
+An AI Bot using ASP.Net.  
+
+## Getting Started 
+    cd src/api 
+    dotnet run
