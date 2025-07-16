@@ -7,6 +7,3 @@ An AI Bot using ASP.Net.
     dotnet run
 
 
-
-
-
