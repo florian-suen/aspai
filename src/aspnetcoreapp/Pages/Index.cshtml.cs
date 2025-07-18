@@ -1,19 +1,29 @@
+ 
+using Aspnetcoreapp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Aspnetcoreapp.Pages;
 
-public class IndexModel : PageModel
+public class IndexModel(ILogger<IndexModel> logger) : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
+    private readonly ILogger<IndexModel> _logger = logger;
+    
+    [BindProperty]
+    public required Chat Chat { get; set; }
 
-    public IndexModel(ILogger<IndexModel> logger)
+    public async Task<IActionResult> OnPostAsync()
     {
-        _logger = logger;
-    }
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
-    public void OnGet()
-    {
+        Console.WriteLine(Chat.Prompt);
+        
+        
+        
 
+        return RedirectToPage("./Index");
     }
 }

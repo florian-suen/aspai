@@ -5,6 +5,88 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4">Deep R1 Model</h1>
     <p>AI Application Core Interface</p>
+    <form>
+    <div class="form-group">
+        <label asp-for="Chat.Prompt" class="control-label"></label>
+        <textarea asp-for="Chat.Prompt" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="Chat.Prompt" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+    </form>
 </div>
+
+<div>
+    <h2>Response</h2>
+    
+    <div class="response-box"></div>
+    
+</div>
+
+
+<script>
+    
+    document.querySelector("form").addEventListener("submit",async (event) => {
+        event.preventDefault();
+        const button = document.querySelector(".btn");
+        button.disabled = true;
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData);
+        const responseBoxNode = document.querySelector(".response-box")
+        const pNode = document.createElement("p");
+        pNode.classList.add("response-box__user")
+        pNode.textContent = data["Chat.Prompt"];
+        
+          responseBoxNode.append(pNode);
+        
+        
+      try {
+          const prompt = await fetch('http://localhost:5108/api/Chat', {
+              credentials: "include",
+              method: "POST",
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify({
+                  "model": "deepseek-r1",
+                  "prompt": [
+                      {
+                          "role": "user",
+                          "content": "Explain quantum computing in simple terms."
+                      }
+                  ]
+              })
+          })
+          if(prompt.ok){
+              
+        const JSON = await prompt.json();
+     
+        
+        const pNode = document.createElement("p");
+              pNode.classList.add("response-box__user")
+              pNode.textContent = JSON.response;
+              responseBoxNode.appendChild(pNode);
+          } else {
+              const pNode = document.createElement("p");
+              pNode.classList.add("response-box__error")
+              const serverErrorText = "No Response from server";
+              pNode.textContent = serverErrorText;
+              if(responseBoxNode.hasChildNodes() === false) responseBoxNode.appendChild(pNode);
+              else if(responseBoxNode.lastChild.textContent !==  serverErrorText) {
+                  responseBoxNode.appendChild(pNode);
+              }
+             }
+      }
+      catch (e) {
+          console.log(e)
+         
+      }
+        button.disabled = false;
+    })
+    
+    
+  
+    
+</script>

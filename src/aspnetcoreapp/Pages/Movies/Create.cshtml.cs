@@ -8,6 +8,7 @@ namespace Aspnetcoreapp.Pages.Movies
     {
         public IActionResult OnGet()
         {
+         
            return Page();
         }
 
@@ -16,6 +17,7 @@ namespace Aspnetcoreapp.Pages.Movies
         
         public async Task<IActionResult> OnPostAsync()
         {
+    
             if (!ModelState.IsValid)
             {
                 return Page();
