@@ -1,6 +1,11 @@
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddOpenApi();
+using Microsoft.EntityFrameworkCore;
+using TodoApi.Models;
 
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
+builder.Services.AddOpenApi();
+builder.Services.AddDbContext<TodoContext>(opt =>
+    opt.UseInMemoryDatabase("TodoList"));
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
@@ -8,6 +13,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
 
 var summaries = new[]
 {
