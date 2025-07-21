@@ -18,10 +18,6 @@ public class IndexModel(ILogger<IndexModel> logger) : PageModel
         {
             return Page();
         }
-
-        Console.WriteLine(Chat.Prompt);
-        
-        
         
 
         return RedirectToPage("./Index");

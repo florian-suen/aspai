@@ -1,13 +1,18 @@
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Options;
+
 namespace api.Services;
 
-public class OllamaService
+public partial class OllamaService
 {
     private readonly HttpClient _httpClient;
+    private readonly List<Message>  _messages; 
 
-    public OllamaService(HttpClient httpClient)
+    public OllamaService(HttpClient httpClient, IOptions<Config> config, MessageStore  messageStore)
     {
+        _messages = messageStore.Messages;
         _httpClient = httpClient;
-        _httpClient.BaseAddress = new Uri("http://localhost:11434/api/");
+        _httpClient.BaseAddress = new Uri(config.Value.Api.Url);
     }
 
     public async Task<string> GenerateCompletion(string model, string prompt)
@@ -18,6 +23,9 @@ public class OllamaService
             prompt,
             stream = false
         };
+        
+        
+        
 
         var response = await _httpClient.PostAsJsonAsync("generate", request);
         response.EnsureSuccessStatusCode();
@@ -28,21 +36,43 @@ public class OllamaService
 
     public async Task<string> ChatCompletion(string model, List<Message> messages)
     {
+
+        _messages.AddRange(messages);
+        _messages.Select((msg, index) => $"Message #{index + 1}: {msg.Content} {msg.Role}")
+            .ToList()
+            .ForEach(Console.WriteLine);
+        
         var request = new
         {
             model,
-            messages,
+            messages = _messages,
             stream = false
         };
 
         var response = await _httpClient.PostAsJsonAsync("chat", request);
-        response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode(); 
+        
+        
+        var result = await response.Content.ReadFromJsonAsync<OllamaChatResponse>(); 
+        var input = result?.Message?.Content ?? string.Empty;
+    
+       _messages.Add(new("assistant",input));
+       var output = MyRegex().Replace(input, "").Trim();
+       return output;
 
-        var result = await response.Content.ReadFromJsonAsync<OllamaChatResponse>();
-        return result?.Message?.Content ?? string.Empty;
+
     }
+
+    [GeneratedRegex(@"<think>[\s\S]*?</think>")]
+    private static partial Regex MyRegex();
 }
 
 public record OllamaCompletionResponse(string Response);
 public record OllamaChatResponse(Message Message);
 public record Message(string Role, string Content);
+
+
+public  class MessageStore
+{
+    public readonly List<Message>  Messages = []; 
+}

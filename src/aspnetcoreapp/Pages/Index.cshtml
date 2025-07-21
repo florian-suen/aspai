@@ -10,81 +10,120 @@
     <form>
     <div class="form-group">
         <label asp-for="Chat.Prompt" class="control-label"></label>
-        <textarea asp-for="Chat.Prompt" class="form-control" rows="5"></textarea>
+        <textarea asp-for="Chat.Prompt" class="form-control textarea" rows="5"></textarea>
         <span asp-validation-for="Chat.Prompt" class="text-danger"></span>
     </div>
     
     <div class="form-group button-container">
-        <input type="submit" value="Create" class="btn btn-primary" />
+        <select id="model" name="model"> <option  value="deepseek-r1">
+            deepseek-r1
+        </option>
+        <option value="HammerAI/hermes-3-llama-3.1">
+            hermes-3-llama-3.1
+        </option>
+        <option value="huihui_ai/gemma3-abliterated">
+            gemma3
+        </option>
+        <option value="leeplenty/lumimaid-v0.2">
+            lumimaid
+        </option>
+        
+        </select>
+        <input type="submit" value="Create" class="btn btn-primary"/>
     </div>
     </form>
 </div>
 
-<div>
+<div class="response-container">
     <h2>Response</h2>
-    
     <div class="response-box"></div>
-    
 </div>
 
 
 <script>
+    const textArea = document.querySelector('.textarea');
+    document.querySelector("form").addEventListener("submit",submitHandler)
+ 
     
-    document.querySelector("form").addEventListener("submit",async (event) => {
-        event.preventDefault();
-        const button = document.querySelector(".btn");
-        button.disabled = true;
-        const formData = new FormData(event.target);
-        const data = Object.fromEntries(formData);
-        const responseBoxNode = document.querySelector(".response-box")
-        const pNode = document.createElement("p");
-        pNode.classList.add("response-box__user")
-        pNode.textContent = data["Chat.Prompt"];
-        
-          responseBoxNode.append(pNode);
-        
-        
-      try {
-          const prompt = await fetch('http://localhost:5108/api/Chat', {
-              credentials: "include",
-              method: "POST",
-              headers: {"Content-Type": "application/json"},
-              body: JSON.stringify({
-                  "model": "deepseek-r1",
-                  "prompt": [
-                      {
-                          "role": "user",
-                          "content": "Explain quantum computing in simple terms."
-                      }
-                  ]
-              })
-          })
-          if(prompt.ok){
-              
-        const JSON = await prompt.json();
-     
-        
-        const pNode = document.createElement("p");
-              pNode.classList.add("response-box__user")
-              pNode.textContent = JSON.response;
-              responseBoxNode.appendChild(pNode);
-          } else {
-              const pNode = document.createElement("p");
-              pNode.classList.add("response-box__error")
-              const serverErrorText = "No Response from server";
-              pNode.textContent = serverErrorText;
-              if(responseBoxNode.hasChildNodes() === false) responseBoxNode.appendChild(pNode);
-              else if(responseBoxNode.lastChild.textContent !==  serverErrorText) {
-                  responseBoxNode.appendChild(pNode);
-              }
-             }
-      }
-      catch (e) {
-          console.log(e)
-         
-      }
-        button.disabled = false;
+    textArea.addEventListener('keydown',(event)=>{
+        if(event.repeat === false && event.key === 'Enter'){
+            event.preventDefault();
+           document.querySelector(".btn-primary").click();
+        }
     })
+    
+    
+    
+    
+    
+    
+    async function submitHandler(event){
+        console.log('eeee')
+        {if(textArea.value.length === 0) return;
+            event.preventDefault();
+
+            const button = document.querySelector(".btn");
+            button.disabled = true;
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+            textArea.value = '';
+            const responseBoxNode = document.querySelector(".response-box")
+            const pNode = document.createElement("p");
+            pNode.classList.add("response-box__user")
+            pNode.textContent = data["Chat.Prompt"];
+           const model = data["model"];
+            responseBoxNode.append(pNode);
+
+
+            try {
+                const prompt = await fetch('http://localhost:5108/api/Chat', {
+                    credentials: "include",
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        "model": model,
+                        "prompt": [
+                            {
+                                "role": "user",
+                                "content":  data["Chat.Prompt"]
+                            }
+                        ]
+                    })
+                })
+                if(prompt.ok){
+
+                    const JSON = await prompt.json();
+
+
+                    const pNode = document.createElement("p");
+                    pNode.classList.add("response-box__assistant")
+                    pNode.textContent = JSON.response;
+                    responseBoxNode.appendChild(pNode);
+                } else {
+                    const pNode = document.createElement("p");
+                    pNode.classList.add("response-box__error")
+                    const serverErrorText = "No Response from server";
+                    pNode.textContent = serverErrorText;
+                    if(responseBoxNode.hasChildNodes() === false) responseBoxNode.appendChild(pNode);
+                    else if(responseBoxNode.lastChild.textContent !==  serverErrorText) {
+                        responseBoxNode.appendChild(pNode);
+                    }
+                }
+            }
+            catch (e) {
+                console.log(e)
+            }
+            button.disabled = false;
+        }
+        
+        
+        
+    }
+    
+    
+    
+    
+    
     
     
   

@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddRazorPages();
+builder.Services.Configure<Config>(builder.Configuration);
 builder.Services.AddDbContext<AspnetcoreappContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("aspnetcoreappContext") ?? throw new InvalidOperationException("Connection string 'aspnetcoreappContext' not found.")));
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
@@ -29,3 +30,13 @@ app.MapRazorPages()
 
 app.Run();
 
+
+public class Api
+{
+    public string Url { get; set; } = string.Empty;
+}
+
+public class Config()
+{
+    public required Api Api = new();
+}

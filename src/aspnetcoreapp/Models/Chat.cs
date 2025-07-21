@@ -5,7 +5,7 @@ namespace Aspnetcoreapp.Models;
 
 public class Chat
 {
-   [StringLength(60, MinimumLength = 3)]
+   [StringLength(500, MinimumLength = 3)]
    [Required]
    [Column(TypeName = "text")] 
    [Display(Name = "Message")]

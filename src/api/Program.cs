@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<Config>(builder.Configuration);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
@@ -24,7 +25,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<TodoContext>(opt =>
     opt.UseInMemoryDatabase("TodoList"));
-
+builder.Services.AddSingleton<MessageStore>();
 builder.Services.AddHttpClient<OllamaService>();
 builder.Services.AddDbContext<OllamaContext>(opt =>
     opt.UseInMemoryDatabase("Ollama"));
@@ -40,3 +41,13 @@ app.MapControllers();
 app.UseCors("AllowSpecificOrigins");
 
 app.Run();
+public class Api
+{
+    public string Url { get; set; } = string.Empty;
+
+}
+
+public class Config()
+{
+    public required Api Api { get; init; } = new();
+}
