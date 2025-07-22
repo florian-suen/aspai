@@ -10,16 +10,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins(
-                
-                    "http://localhost:5149")
+            policy.AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials(); // Only if you need credentials/cookies
+                .AllowAnyMethod();
         });
 });
 
-
+//  policy.WithOrigins(["http://192.168.1.76:5149", "http://localhost:5149", "http://127.0.0.1:5149","http://0.0.0.0:5149"])
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -30,16 +27,21 @@ builder.Services.AddHttpClient<OllamaService>();
 builder.Services.AddDbContext<OllamaContext>(opt =>
     opt.UseInMemoryDatabase("Ollama"));
 var app = builder.Build();
+app.Urls.Add("http://192.168.1.76:5108");
+app.Use(async (ctx, next) => {
+    Console.WriteLine($"{ctx.Request.Method} {ctx.Request.Path}");
+    await next();
+});
+
+app.UseCors("AllowSpecificOrigins");
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
-app.UseCors("AllowSpecificOrigins");
-
 app.Run();
 public class Api
 {

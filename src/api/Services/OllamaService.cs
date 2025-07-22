@@ -38,10 +38,8 @@ public partial class OllamaService
     {
 
         _messages.AddRange(messages);
-        _messages.Select((msg, index) => $"Message #{index + 1}: {msg.Content} {msg.Role}")
-            .ToList()
-            .ForEach(Console.WriteLine);
-        
+     
+      
         var request = new
         {
             model,
@@ -55,7 +53,7 @@ public partial class OllamaService
         
         var result = await response.Content.ReadFromJsonAsync<OllamaChatResponse>(); 
         var input = result?.Message?.Content ?? string.Empty;
-    
+       
        _messages.Add(new("assistant",input));
        var output = MyRegex().Replace(input, "").Trim();
        return output;
@@ -68,7 +66,7 @@ public partial class OllamaService
 }
 
 public record OllamaCompletionResponse(string Response);
-public record OllamaChatResponse(Message Message);
+public record OllamaChatResponse(Message Message, string Model);
 public record Message(string Role, string Content);
 
 

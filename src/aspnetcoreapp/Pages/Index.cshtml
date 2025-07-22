@@ -21,10 +21,10 @@
         <option value="HammerAI/hermes-3-llama-3.1">
             hermes-3-llama-3.1
         </option>
-        <option value="huihui_ai/gemma3-abliterated">
+        <option value="huihui_ai/gemma3-abliterated:1b">
             gemma3
         </option>
-        <option value="leeplenty/lumimaid-v0.2">
+        <option value="leeplenty/lumimaid-v0.2:8b">
             lumimaid
         </option>
         
@@ -43,8 +43,8 @@
 <script>
     const textArea = document.querySelector('.textarea');
     document.querySelector("form").addEventListener("submit",submitHandler)
- 
-    
+
+     
     textArea.addEventListener('keydown',(event)=>{
         if(event.repeat === false && event.key === 'Enter'){
             event.preventDefault();
@@ -58,10 +58,11 @@
     
     
     async function submitHandler(event){
-        console.log('eeee')
+      
         {if(textArea.value.length === 0) return;
             event.preventDefault();
-
+            const currentOrigin = window.location.origin;
+            console.log(currentOrigin);
             const button = document.querySelector(".btn");
             button.disabled = true;
             const formData = new FormData(event.target);
@@ -76,21 +77,26 @@
 
 
             try {
-                const prompt = await fetch('http://localhost:5108/api/Chat', {
-                    credentials: "include",
+                const prompt = await fetch('http://192.168.1.76:5108/api/Chat', {
                     method: "POST",
-                    headers: {"Content-Type": "application/json"},
+                    mode: "cors",
+                    headers: {"Content-Type": "application/json",
+                        'Origin': currentOrigin,
+                    },
                     body: JSON.stringify({
-                        "model": model,
-                        "prompt": [
+                        model: model,
+                        prompt: [
                             {
                                 "role": "user",
                                 "content":  data["Chat.Prompt"]
                             }
                         ]
                     })
-                })
-                if(prompt.ok){
+                }).catch((e)=>{console.log(e)})
+                
+                
+                
+                if(prompt?.ok){
 
                     const JSON = await prompt.json();
 
